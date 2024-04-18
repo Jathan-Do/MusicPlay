@@ -8,10 +8,15 @@ const cd = $(".cd");
 const playBtn = $(".btn-toggle-play");
 const player = $(".player");
 const progress = $("#progress");
+const nextBtn = $(".btn-next");
+const prevBtn = $(".btn-prev");
+const randomBtn = $(".btn-random");
+const repeatBtn = $(".btn-repeat");
 
 const app = {
     currentIndex: 0,
     isPlaying: false,
+    isRandom: false,
     songs: [
         {
             name: "Biên Giới Long Bình",
@@ -133,19 +138,82 @@ const app = {
         };
 
         //Xử lí khi tua bài hát
-        progress.onchange = function (e) {
+        progress.onchange = function () {
             const seekTime = audio.duration * (progress.value / 100);
             audio.currentTime = seekTime;
         };
+
+        //Xử lí khi click next song
+        nextBtn.onclick = function () {
+            if (_this.isRandom) {
+                _this.randomSong();
+            } else {
+                _this.nextSong();
+            }
+            audio.play();
+        };
+
+        //Xử lí khi click prev song
+        prevBtn.onclick = function () {
+            if (_this.isRandom) {
+                _this.randomSong();
+            } else {
+                _this.prevSong();
+            }
+            audio.play();
+        };
+
+        //Xử lí khi click random
+        randomBtn.onclick = function () {
+            _this.isRandom = !_this.isRandom;
+            randomBtn.classList.toggle("active", _this.isRandom);
+        };
+
+        //Xử lí chuyển bài khi hết bài hát
+        audio.onended = function () {
+            if (_this.isRandom) {
+                _this.randomSong();
+            } else {
+                _this.nextSong();
+            }
+            audio.play();
+        };
     },
 
-    //Tải bài hát đầu tiên
+    //Tải bài hát
     loadCurrentSong: function () {
         heading.textContent = this.currentSong.name;
         cdThumb.style.backgroundImage = `url(${this.currentSong.image})`;
         audio.src = this.currentSong.path;
     },
 
+    //Next song
+    nextSong: function () {
+        this.currentIndex++;
+        if (this.currentIndex >= this.songs.length) {
+            this.currentIndex = 0;
+        }
+        this.loadCurrentSong();
+    },
+
+    //Prev song
+    prevSong: function () {
+        this.currentIndex--;
+        if (this.currentIndex < 0) {
+            this.currentIndex = this.songs.length - 1;
+        }
+        this.loadCurrentSong();
+    },
+
+    //Random song
+    randomSong: function () {
+        let newIndex;
+        do {
+            newIndex = Math.floor(Math.random() * this.songs.length);
+        } while (newIndex === this.currentIndex);
+        this.currentIndex = newIndex;
+        this.loadCurrentSong();
+    },
     start: function () {
         this.defineProperties();
         this.handleEvents();
