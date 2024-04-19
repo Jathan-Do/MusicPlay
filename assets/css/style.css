@@ -107,7 +107,33 @@ header h2 {
   justify-content: center;
   background-color: var(--primary-color);
 }
-
+.control .btn-volume {
+  position: relative;
+  justify-content: center;
+  display: flex;
+  cursor: pointer;
+}
+.btn-volume .icon-mute+.icon-unmute {
+  position: absolute;
+}
+.btn-volume .icon-mute {    
+  visibility: hidden;
+}
+.btn-volume:hover .volume-bar {    
+  visibility: visible;
+  opacity: 0.7;
+}
+.volume-bar {
+  position: absolute;
+  transform: rotate(-90deg);
+  margin: -70px;    
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
+  width: 100px;
+  height: 20px;
+  cursor: pointer;    
+}
 .progress {
   width: 100%;
   -webkit-appearance: none;

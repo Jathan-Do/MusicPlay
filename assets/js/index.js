@@ -15,9 +15,15 @@ const nextBtn = $(".btn-next");
 const prevBtn = $(".btn-prev");
 const randomBtn = $(".btn-random");
 const repeatBtn = $(".btn-repeat");
+const volBtn = $(".btn-volume");
+const volBar = $(".volume-bar");
+const iconMute = $(".icon-mute");
+const iconUnmute = $(".icon-unmute");
 
 const app = {
     currentIndex: 0,
+    currVol: 1,
+    lockVol: 1,
     isPlaying: false,
     isRandom: false,
     isRepeat: false,
@@ -213,6 +219,49 @@ const app = {
                     audio.play();
                 }
             }
+        };
+
+        //Volume-Bar
+        volBar.oninput = (e) => {
+            _this.setConfig("currVol", e.target.value);
+            audio.volume = volBar.value;
+        };
+
+        if (_this.currVol > 0) {
+            volBar.value = _this.currVol;
+            audio.volume = _this.currVol;
+            iconUnmute.style.visibility = "visible";
+            iconMute.style.visibility = "hidden";
+        } else {
+            volBar.value = 0;
+            audio.volume = 0;
+            iconUnmute.style.visibility = "hidden";
+            iconMute.style.visibility = "visible";
+        }
+
+        //Change-Volume
+        audio.onvolumechange = () => {
+            volBar.value = audio.volume;
+            if (audio.volume === 0) {
+                iconMute.style.visibility = "visible";
+                iconUnmute.style.visibility = "hidden";
+            } else {
+                iconMute.style.visibility = "hidden";
+                iconUnmute.style.visibility = "visible";
+            }
+        };
+
+        //Unmute-Volume
+        iconUnmute.onclick = () => {
+            _this.setConfig("lockVol", audio.volume);
+            audio.volume = 0;
+            _this.setConfig("currVol", audio.volume);
+        };
+
+        //Mute-Volume 
+        iconMute.onclick = () => {
+            audio.volume = this.config.lockVol;
+            _this.setConfig("currVol", audio.volume);
         };
     },
 
